@@ -150,7 +150,7 @@ void SampleViewer::display()
 		int rowSize = depthFrame.getStrideInBytes() / sizeof(openni::DepthPixel);
 		int width = depthFrame.getWidth();
 		int height = depthFrame.getHeight();
-
+		printf(" Resolution %d   %d\n ", height, width);				
 		for (int y = 0; y < height; ++y)
 		{
 			const openni::DepthPixel* pDepth = pDepthRow;

@@ -102,12 +102,23 @@ int main()
 		unsigned int height_frame = frame.getHeight();
 		unsigned int width_frame = frame.getWidth();
 		printf(" Resolution %d   %d\n ", height_frame, width_frame);
-		Mat depth_frame = cv::Mat::zeros(height_frame, width_frame, CV_16UC1);
+		Mat depth_frame = cv::Mat::zeros(height_frame, width_frame, CV_8UC1);
 		for(unsigned int i=0;i<height_frame;i++){
 		  for (unsigned int j=0;j<width_frame;j++){
-		    //depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j];
+		     if(pDepth[i*height_frame + j] > 255){
+			//depth_frame.at<uchar>(i, j) = 255;
+			depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j] & 0xff;
+                     }else{
+			depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j];
+
+                     }
+		      // depth_frame.at<unsigned int>(i, j) = pDepth[i*height_frame + j];
 		  }		 		
 		}
+                
+		//Draw depth image
+		imshow("Cursed window",depth_frame);
+		waitKey(10);
 		
 	}
 

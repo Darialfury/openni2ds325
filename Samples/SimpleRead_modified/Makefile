@@ -8,7 +8,7 @@ INC_DIRS = \
 
 SRC_FILES = *.cpp
 
-USED_LIBS += OpenNI2
+USED_LIBS += OpenNI2 opencv_core opencv_imgproc opencv_highgui
 
 EXE_NAME = Simple_read_sample_modified
 
