@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <OpenNI.h>
 
+
 #include "OniSampleUtilities.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -28,12 +29,14 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #define SAMPLE_READ_WAIT_TIMEOUT 2000 //2000ms
+#define MAX_DEPTH 10000
 
 using namespace openni;
 using namespace cv;
 
 int main()
 {
+    float m_pDepthHist[MAX_DEPTH];
 	Status rc = OpenNI::initialize();
 	if (rc != STATUS_OK)
 	{
@@ -95,25 +98,36 @@ int main()
 		}
 
 		DepthPixel* pDepth = (DepthPixel*)frame.getData();
+        calculateHistogram(m_pDepthHist, MAX_DEPTH, frame);
 
 		int middleIndex = (frame.getHeight()+1)*frame.getWidth()/2;
 
 		printf("[%08llu] ===>  %8d\n", (long long)frame.getTimestamp(), pDepth[middleIndex]);
-		unsigned int height_frame = frame.getHeight();
-		unsigned int width_frame = frame.getWidth();
+		int height_frame = frame.getHeight();
+		int width_frame = frame.getWidth();
 		printf(" Resolution %d   %d\n ", height_frame, width_frame);
 		Mat depth_frame = cv::Mat::zeros(height_frame, width_frame, CV_8UC1);
-		for(unsigned int i=0;i<height_frame;i++){
-		  for (unsigned int j=0;j<width_frame;j++){
-		     if(pDepth[i*height_frame + j] > 255){
-			//depth_frame.at<uchar>(i, j) = 255;
-			depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j] & 0xff;
-                     }else{
-			depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j];
+        
+        int rowSize = frame.getStrideInBytes() / sizeof(openni::DepthPixel);
 
-                     }
+        const openni::DepthPixel* pDepthRow = (const openni::DepthPixel*)frame.getData();
+
+		for(int i=0;i<height_frame;i++){
+           const openni::DepthPixel* pDepth = pDepthRow;
+		  for (int j=0;j<width_frame;j++, ++pDepth){
+		     if(pDepth[i*height_frame + j] > 255){
+              
+			//depth_frame.at<uchar>(i, j) = 255;
+			//depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j] & 0xff;
+                 }else{
+			//depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j];
+                 }
 		      // depth_frame.at<unsigned int>(i, j) = pDepth[i*height_frame + j];
-		  }		 		
+            int nHistValue = m_pDepthHist[*pDepth]; 
+            //printf(" jojojo message \n ");
+            depth_frame.at<uchar>(i, j) = nHistValue;
+		  }	
+          pDepthRow += rowSize; 		
 		}
                 
 		//Draw depth image
