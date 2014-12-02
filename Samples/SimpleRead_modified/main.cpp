@@ -106,11 +106,11 @@ int main()
 		int height_frame = frame.getHeight();
 		int width_frame = frame.getWidth();
 		printf(" Resolution %d   %d\n ", height_frame, width_frame);
-		Mat depth_frame = cv::Mat::zeros(height_frame, width_frame, CV_8UC1);
+		Mat depth_frame = cv::Mat::zeros(height_frame, width_frame, CV_16UC1);
         
 		int rowSize = frame.getStrideInBytes() / sizeof(openni::DepthPixel);
 		const openni::DepthPixel* pDepthRow = (const openni::DepthPixel*)frame.getData();
-
+		printf("size of row: %i \n", rowSize);
 		for (int i=0;i<height_frame;i++){
 			const openni::DepthPixel* pDepth = pDepthRow;
 			for (int j=0;j<width_frame;j++, ++pDepth){
@@ -123,7 +123,8 @@ int main()
 				// depth_frame.at<unsigned int>(i, j) = pDepth[i*height_frame + j];
 				int nHistValue = m_pDepthHist[*pDepth]; 
 				//printf(" jojojo message \n ");
-				depth_frame.at<uchar>(i, j) = nHistValue;
+				//depth_frame.at<uchar>(i, j) = (uchar) ((static_cast<float> (*pDepth))*256/10000);
+				depth_frame.at<unsigned short>(i, j) =  (((*pDepth)*8));
 			}
 			pDepthRow += rowSize;
 		}
