@@ -120,10 +120,10 @@ int main()
 				}else{
 					//depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j];
 				}
-			// depth_frame.at<unsigned int>(i, j) = pDepth[i*height_frame + j];
-			int nHistValue = m_pDepthHist[*pDepth]; 
-			//printf(" jojojo message \n ");
-			depth_frame.at<uchar>(i, j) = nHistValue;
+				// depth_frame.at<unsigned int>(i, j) = pDepth[i*height_frame + j];
+				int nHistValue = m_pDepthHist[*pDepth]; 
+				//printf(" jojojo message \n ");
+				depth_frame.at<uchar>(i, j) = nHistValue;
 			}
 			pDepthRow += rowSize;
 		}
