@@ -114,17 +114,19 @@ int main()
 		for (int i=0;i<height_frame;i++){
 			const openni::DepthPixel* pDepth = pDepthRow;
 			for (int j=0;j<width_frame;j++, ++pDepth){
-				if (pDepth[i*height_frame + j] > 255){
+				if (((*pDepth)>0) && ((*pDepth)<800)){
+					depth_frame.at<unsigned short>(i, j) =  (((*pDepth)*12));
 					//depth_frame.at<uchar>(i, j) = 255;
 					//depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j] & 0xff;
 				}else{
 					//depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j];
+					depth_frame.at<unsigned short>(i, j) = 65530;
 				}
 				// depth_frame.at<unsigned int>(i, j) = pDepth[i*height_frame + j];
 				int nHistValue = m_pDepthHist[*pDepth]; 
 				//printf(" jojojo message \n ");
 				//depth_frame.at<uchar>(i, j) = (uchar) ((static_cast<float> (*pDepth))*256/10000);
-				depth_frame.at<unsigned short>(i, j) =  (((*pDepth)*8));
+				//depth_frame.at<unsigned short>(i, j) =  (((*pDepth)*12));
 			}
 			pDepthRow += rowSize;
 		}
