@@ -106,7 +106,7 @@ int main()
 		int height_frame = frame.getHeight();
 		int width_frame = frame.getWidth();
 		printf(" Resolution %d   %d\n ", height_frame, width_frame);
-		Mat depth_frame = cv::Mat::zeros(height_frame, width_frame, CV_16UC1);
+		Mat depth_frame = cv::Mat::zeros(height_frame, width_frame, CV_8UC1);
         
 		int rowSize = frame.getStrideInBytes() / sizeof(openni::DepthPixel);
 		const openni::DepthPixel* pDepthRow = (const openni::DepthPixel*)frame.getData();
@@ -114,13 +114,18 @@ int main()
 		for (int i=0;i<height_frame;i++){
 			const openni::DepthPixel* pDepth = pDepthRow;
 			for (int j=0;j<width_frame;j++, ++pDepth){
-				if (((*pDepth)>0) && ((*pDepth)<800)){
-					depth_frame.at<unsigned short>(i, j) =  (((*pDepth)*12));
+			 	short  new_value = static_cast<short> ((*pDepth));
+				unsigned int value_depth = ((*pDepth)*255)/1770; 
+				if (((*pDepth)>0) && ((*pDepth)<910)){
+					//depth_frame.at<unsigned short>(i, j) = static_cast<unsigned short> ((new_value));
+					//depth_frame.at<unsigned short>(i, j) = ((new_value));
+					//depth_frame.at<uchar>(i, j) =  (((*pDepth)*12));
+					depth_frame.at<uchar>(i, j) =  value_depth;
 					//depth_frame.at<uchar>(i, j) = 255;
 					//depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j] & 0xff;
 				}else{
 					//depth_frame.at<uchar>(i, j) = pDepth[i*height_frame + j];
-					depth_frame.at<unsigned short>(i, j) = 65530;
+					depth_frame.at<uchar>(i, j) = 255;
 				}
 				// depth_frame.at<unsigned int>(i, j) = pDepth[i*height_frame + j];
 				int nHistValue = m_pDepthHist[*pDepth]; 
@@ -133,6 +138,10 @@ int main()
                 
 		//Draw depth image
 		imshow("Cursed window",depth_frame);
+		medianBlur(depth_frame, depth_frame, 3);
+		imshow("median filter",depth_frame);
+		GaussianBlur(depth_frame, depth_frame, cv::Size(9, 9), 0, 0);
+		imshow("Improved window", depth_frame);
 		waitKey(10);
 		
 	}
